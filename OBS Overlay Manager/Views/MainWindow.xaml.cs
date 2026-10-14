@@ -20,7 +20,9 @@ namespace OBS_Overlay_Manager
 
         private void On_Close(object sender, CancelEventArgs e)
         {
-            vm.SaveJSON();
+            vm.SaveNewProfileLeft();
+            vm.SaveNewProfileRight();
+            //vm.SaveJSON();
         }
     }
 }

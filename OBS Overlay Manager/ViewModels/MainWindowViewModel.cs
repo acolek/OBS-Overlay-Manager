@@ -108,6 +108,7 @@ namespace OBS_Overlay_Manager.ViewModels
                 }
                 catch { }
                 NotifyAllLeft();
+                SaveJSON();
             }
         }
 
@@ -167,6 +168,7 @@ namespace OBS_Overlay_Manager.ViewModels
                 }
                 catch { }
                 NotifyAllRight();
+                SaveJSON();
             }
         }
 
@@ -243,29 +245,11 @@ namespace OBS_Overlay_Manager.ViewModels
         private void DeleteProfileLeft()
         {
             DeleteProfile(true);
-            //try
-            //{
-            //    _json.AllProfiles.Remove(AllProfiles.First(p => p.ProfileName.Equals(ProfileNameLeft)));
-            //    _profileLeft = new();
-            //    NotifyAllLeft();
-            //    SaveJSON();
-            //    NotifyPropertyChanged(nameof(AllProfiles));
-            //}
-            //catch { }
         }
 
         private void DeleteProfileRight()
         {
             DeleteProfile(false);
-            //try
-            //{
-            //    _json.AllProfiles.Remove(AllProfiles.First(p => p.ProfileName.Equals(ProfileNameRight)));
-            //    _profileRight = new();
-            //    NotifyAllRight();
-            //    SaveJSON();
-            //    NotifyPropertyChanged(nameof(AllProfiles));
-            //}
-            //catch { }
         }
 
         private int GetColor(bool isLeft)
@@ -329,7 +313,7 @@ namespace OBS_Overlay_Manager.ViewModels
         }
 
 
-        public void SaveJSON()
+        internal void SaveJSON()
         {
             _json.LastSelectedProfileLeft = ProfileNameLeft;
             _json.LastSelectedProfileRight = ProfileNameRight;
@@ -339,6 +323,10 @@ namespace OBS_Overlay_Manager.ViewModels
 
         private void SaveNewProfile(bool isLeft)
         {
+            if (GetProfileName(isLeft).Equals(string.Empty))
+                return;
+
+            // if profile exists, update it instead of adding new
             if (AllProfiles.Count > 0 && _json.AllProfiles.FirstOrDefault(p => p is not null && p.ProfileName.Equals(GetProfileName(isLeft)), null) is not null)
             {
                 UpdateJSON(isLeft, !isLeft);
@@ -358,51 +346,14 @@ namespace OBS_Overlay_Manager.ViewModels
             NotifyPropertyChanged(nameof(AllProfiles));
         }
 
-        private void SaveNewProfileLeft()
+        internal void SaveNewProfileLeft()
         {
             SaveNewProfile(true);
-            //try
-            //{
-            //    _json.AllProfiles.Add(new Profile(ProfileNameLeft, ColorLeft, TeamNameLeft, ScoreLeft));
-            //}
-            //catch (ArgumentException) //TODO this is left over from using Dictionary; have to enforce no duplicates another way
-            //{
-            //    Profile p = _json.AllProfiles.First(p => p.ProfileName.Equals(ProfileNameLeft));
-            //    p.ProfileName = ProfileNameLeft;
-            //    p.Color = ColorLeft;
-            //    p.TeamName = TeamNameLeft;
-            //    p.Score = ScoreLeft;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Warning);
-            //}
-
-            //SaveJSON();
-            //NotifyPropertyChanged(nameof(AllProfiles));
         }
 
-        private void SaveNewProfileRight()
+        internal void SaveNewProfileRight()
         {
             SaveNewProfile(false);
-            //try
-            //{
-            //    _json.AllProfiles.Add(new Profile(ProfileNameRight, ColorRight, TeamNameRight, ScoreRight));
-            //}
-            //catch (ArgumentException) //TODO this is left over from using Dictionary; have to enforce no duplicates another way
-            //{
-            //    Profile p = _json.AllProfiles.First(p => p.ProfileName.Equals(ProfileNameRight));
-            //    p.ProfileName = ProfileNameRight;
-            //    p.Color = ColorRight;
-            //    p.TeamName = TeamNameRight;
-            //    p.Score = ScoreRight;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Warning);
-            //}
-            //SaveJSON();
-            //NotifyPropertyChanged(nameof(AllProfiles));
         }
 
         private void UpdateJSON(bool isLeft)
@@ -416,6 +367,8 @@ namespace OBS_Overlay_Manager.ViewModels
                 p.Score = GetScore(isLeft);
             }
             catch { }
+
+            SaveJSON();
         }
 
         private void UpdateJSON(bool doLeft, bool doRight)
@@ -425,8 +378,6 @@ namespace OBS_Overlay_Manager.ViewModels
 
             if (doRight)
                 UpdateJSON(false);
-
-            SaveJSON();
         }
         #endregion
     }
