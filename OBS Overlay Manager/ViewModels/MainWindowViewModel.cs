@@ -365,10 +365,11 @@ namespace OBS_Overlay_Manager.ViewModels
                 p.Color = GetColor(isLeft);
                 p.TeamName = GetTeamName(isLeft);
                 p.Score = GetScore(isLeft);
+
+                SaveJSON();
             }
             catch { }
 
-            SaveJSON();
         }
 
         private void UpdateJSON(bool doLeft, bool doRight)
